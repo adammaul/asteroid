@@ -1,4 +1,5 @@
 import pygame
+import sys
 from constants import *
 from circleshape import *
 from player import *
@@ -11,39 +12,41 @@ def main():
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
-    dt = 0 
+    dt = 0
 
     asteroids = pygame.sprite.Group()
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
 
     Player.containers = (updatable, drawable)
-    Asteroid.containers = (asteroids,updatable,drawable)
+    Asteroid.containers = (asteroids, updatable, drawable)
     AsteroidField.containers = updatable
-
 
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     asteroid_field = AsteroidField()
-
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-            
+
         screen.fill("black")
 
         for update in updatable:
             update.update(dt)
 
+        for asteroid in asteroids:
+            if asteroid.collision(player) is True:
+                print("Game over!")
+                sys.exit()
+
         for draw in drawable:
             draw.draw(screen)
-
 
         pygame.display.flip()
 
         # Limit the game to 60 FPS
-        dt = clock.tick(60) / 1000
+        dt = clock.tick(60) / 100
 
 
 if __name__ == "__main__":
